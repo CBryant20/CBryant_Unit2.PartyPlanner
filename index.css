@@ -13,7 +13,7 @@ header {
 
 main {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   display: 8;
 }
 
@@ -22,7 +22,7 @@ main {
   /* color: #fff; */
   /* padding: 2rem; */
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex: 1;
   align-items: center;
   justify-content: center;

@@ -1,6 +1,6 @@
 const BASE_URL = "https://fsa-crud-2aa9294fe819.herokuapp.com/api";
 const COHORT = "2401-FSA-ET-WEB-FT";
-const endpoint = "/events";
+const endpoint = "events";
 
 /**
  *
@@ -28,6 +28,11 @@ const state = {
   selectedEvent: null,
 };
 
+const eventsList = document.querySelector("#events");
+
+const addEventForm = document.querySelector("#addEvent");
+addEventForm.addEventListener("submit", addEvent);
+
 /* 
 - User will find an event with names, dates, times, locations and descriptions
 
@@ -47,7 +52,70 @@ const state = {
 9. Is there an event listener attached to each delete button? Does it correctly remove a party from the list of parties?
 */
 
-// Update state with an array of recipe objects from the API via the internet
-////////////// RENDER /////////////////////
+async function render() {
+  await getEvents();
+  renderEvents();
+}
 
+render();
+
+// Create function for selected Event
+function selectedEvent(event) {
+  state.selectedEvent = event;
+  location.hash = event.id;
+}
+
+// Create function to load the hash tags for the selected events
+function loadEventHash() {
+  const id = +location.hash.slice(1);
+  state.selectedEvent = state.events.find((event) => event.id === id);
+}
+
+// Update state with an array of events objects from the API via the internet
+async function getEvents() {
+  try {
+    const response = await fetch(BASE_URL + COHORT + endpoint);
+    const jsonResponse = await response.json();
+    state.events = jsonResponse.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+////////////// RENDER /////////////////////
+function renderEvents() {
+  const $ul = document.querySelector("ul");
+  const $events = state.events.map((event) => {
+    const $li = document.createElement("li");
+    $li.innerHTML = `
+    <h2>${event.name}</h2>`;
+
+    $li.addEventListener("click", (_event) => {
+      selectedEvent(event);
+      renderSelectedEvent();
+    });
+
+    return $li;
+  });
+  $ul.replaceChildren(...$events);
+}
+
+function renderSelectedEvent() {
+  const $event = document.querySelector("article.selected_event");
+  $event.innerHTML = `
+  <h2>${state.selectedEvent.name}</h2>
+  <p>${state.selectedRecipe.description}</p>
+  <p>${state.selectedRecipe.date}</p>
+  <p>${state.selectedRecipe.location}</p>
+  <p>${state.selectedRecipe.cohortId}</p>
+  `;
+}
 /////////////// SCRIPT /////////////////////
+async function init() {
+  await getEvents();
+  renderEvents();
+  loadEventHash();
+  renderSelectedEvent();
+}
+
+window.addEventListener("load", init);
