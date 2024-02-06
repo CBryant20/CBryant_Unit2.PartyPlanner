@@ -3,7 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Event Planner</title>
+    <link rel="stylesheet" href="index.css" />
   </head>
-  <body></body>
+  <body>
+    <header>
+      <form>
+        <label>
+          Name
+          <input id="name" name="text" type="text" />
+        </label>
+        <label>
+          Description
+          <input id="description" name="text" type="text" />
+        </label>
+        <label>
+          Date
+          <input id="date" name="text" type="text" />
+        </label>
+        <label>
+          Location
+          <input id="location" name="text" type="text" />
+        </label>
+        <label>
+          Cohort ID
+          <input id="cohortID" name="text" type="text" />
+        </label>
+        <button id="addButton" type="button">Add Event</button>
+      </form>
+    </header>
+    <main>
+      <section id="events">
+        <h1>Events</h1>
+        <ul></ul>
+      </section>
+      <section id="select-event">
+        <h2>Selected Event</h2>
+        <article class="selected_event"></article>
+      </section>
+    </main>
+    <script src="index.js"></script>
+  </body>
 </html>
