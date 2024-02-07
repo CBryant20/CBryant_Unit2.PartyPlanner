@@ -47,23 +47,23 @@ const state = {
 9. Is there an event listener attached to each delete button? Does it correctly remove a party from the list of parties?
 */
 
-// const eventsList = document.querySelector("#events");
+const eventsList = document.querySelector("#events");
 
 const $addEventForm = document.querySelector("#addEventButton");
 
-$addEventForm.addEventListener("click", addEventButton);
+$addEventForm.addEventListener("click", addEvent);
 
-// async function render() {
-//   await getEvents();
-//   renderEvents();
-// }
+async function render() {
+  await getEvents();
+  renderEvents();
+}
 
-// render();
+render();
 
 // // Create function for selected Event
 function selectedEvent(event) {
   state.selectedEvent = event;
-  location.hash = event.id;
+  // location.hash = event.id;
 }
 
 // // Create function to load the hash tags for the selected events
@@ -82,19 +82,47 @@ async function getEvents() {
     console.error(error);
   }
 }
+
+async function addEvent(event) {
+  event.preventDefault();
+
+  try {
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: state.events.name.value,
+        description: state.events.description.value,
+        date: state.events.date.value,
+        location: state.events.location.value,
+        cohortID: state.events.cohortID.value,
+      }),
+    });
+    const eventResult = await response.json();
+    console.log(eventResult);
+
+    if (!response.ok) {
+      throw new Error("Failed to create artist");
+    }
+
+    render();
+  } catch (error) {
+    console.error(error);
+  }
+}
 function addEventButton(_event) {
   const inputEvent = document.querySelector("#name");
-  const inputEvent2 = document.querySelector("#description");
-  const inputEvent3 = document.querySelector("#date");
-  const inputEvent4 = document.querySelector("#location");
-  const inputEvent5 = document.querySelector("#cohortID");
+  // const inputEvent2 = document.querySelector("#description");
+  // const inputEvent3 = document.querySelector("#date");
+  // const inputEvent4 = document.querySelector("#location");
+  // const inputEvent5 = document.querySelector("#cohortID");
 
   const eventsInput = document.querySelector("#events");
   state.events.push(inputEvent.value);
-  state.events.push(inputEvent2.value);
-  state.events.push(inputEvent3.value);
-  state.events.push(inputEvent4.value);
-  state.events.push(inputEvent5.value);
+  // state.events.push(inputEvent2.value);
+  // state.events.push(inputEvent3.value);
+  // state.events.push(inputEvent4.value);
+  // state.events.push(inputEvent5.value);
 
   let inputEventList = [];
   state.events.map((e) => {
@@ -104,9 +132,14 @@ function addEventButton(_event) {
 }
 
 ////////////// RENDER /////////////////////
-function renderEvents() {
-  const $ul = document.querySelector("#cohortUl");
-  const $events = state.events.map((event) => {
+async function renderEvents() {
+  if (!state.events.length) {
+    eventsList.innerHTML = "<li>No events.</li>";
+    return;
+  }
+
+  // const $ul = document.querySelector("#cohortUl");
+  const $ul = state.events.map((event) => {
     const $li = document.createElement("li");
     $li.innerHTML = `
     <h2>${event.name}</h2>`;
@@ -116,9 +149,16 @@ function renderEvents() {
       renderSelectedEvent();
     });
 
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", async () => {
+      await deleteEvent(event.id);
+      getEvents();
+    });
+    $li.append(deleteButton);
     return $li;
   });
-  $ul.replaceChildren(...$events);
+  eventsList.replaceChildren(...$ul);
 }
 
 function renderSelectedEvent() {
@@ -126,10 +166,10 @@ function renderSelectedEvent() {
   if (state.events) {
     $event.innerHTML = `
   <h2>${state.selectedEvent.name}</h2>
-  <p>${state.selectedRecipe.description}</p>
-  <p>${state.selectedRecipe.date}</p>
-  <p>${state.selectedRecipe.location}</p>
-  <p>${state.selectedRecipe.cohortId}</p>
+  <p>${state.selectedEvent.description}</p>
+  <p>${state.selectedEvent.date}</p>
+  <p>${state.selectedEvent.location}</p>
+  <p>${state.selectedEvent.cohortId}</p>
   `;
   } else {
     $event.innerHTML = `<p>No Event Selected!!!</p>`;
@@ -140,7 +180,7 @@ async function init() {
   await getEvents();
   renderEvents();
   // loadEventHash();
-  renderSelectedEvent();
+  selectedEvent();
 }
 
 window.addEventListener("load", init);
