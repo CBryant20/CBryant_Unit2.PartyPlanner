@@ -49,7 +49,7 @@ const state = {
 
 const eventsList = document.querySelector("#events");
 
-const $addEventForm = document.querySelector("#addEventButton");
+const $addEventForm = document.querySelector("#addEvent");
 
 $addEventForm.addEventListener("submit", addEvent);
 
@@ -63,7 +63,7 @@ render();
 // // Create function for selected Event
 function selectedEvent(event) {
   state.selectedEvent = event;
-  location.hash = state.selectedEvent.id;
+  location.hash = event.id;
 }
 
 // // Create function to load the hash tags for the selected events
@@ -77,7 +77,7 @@ async function getEvents() {
   try {
     const response = await fetch(BASE_URL + COHORT + endpoint);
     const jsonResponse = await response.json();
-    console.log(jsonResponse);
+    // console.log(jsonResponse);
     state.events = jsonResponse.data;
   } catch (error) {
     console.error(error);
@@ -88,23 +88,22 @@ async function addEvent(event) {
   event.preventDefault();
 
   try {
-    const date = new Date(addForm.date.value).toISOString();
-    const response = await fetch(BASE_URL, {
+    const date = new Date($addEventForm.date.value).toISOString();
+    const response = await fetch(BASE_URL + COHORT + endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: state.events.name.value,
-        description: state.events.description.value,
-        date: state.events.date.value,
-        location: state.events.location.value,
-        cohortID: state.events.cohortID.value,
+        name: $addEventForm.name.value,
+        description: $addEventForm.description.value,
+        date,
+        location: $addEventForm.location.value,
       }),
     });
     const eventResult = await response.json();
     console.log(eventResult);
 
     if (!response.ok) {
-      throw new Error("Failed to create artist");
+      throw new Error("Failed to create event");
     }
 
     render();
@@ -112,18 +111,18 @@ async function addEvent(event) {
     console.error(error);
   }
 }
-function addEventButton(_event) {
-  const inputEvent = document.querySelector("#name");
+// function addEventButton(_event) {
+//   const inputEvent = document.querySelector("#name");
 
-  const eventsInput = document.querySelector("#events");
-  state.events.push(inputEvent.value);
+//   const eventsInput = document.querySelector("#events");
+//   state.events.push(inputEvent.value);
 
-  let inputEventList = [];
-  state.events.map((e) => {
-    inputEventList.push(e);
-  });
-  eventsInput.innerHTML = inputEventList;
-}
+//   let inputEventList = [];
+//   state.events.map((e) => {
+//     inputEventList.push(e);
+//   });
+//   eventsInput.innerHTML = inputEventList;
+// }
 
 ////////////// RENDER /////////////////////
 async function renderEvents() {
@@ -148,9 +147,9 @@ async function renderEvents() {
   eventsList.replaceChildren(...$ul);
 }
 
-async function deleteEvent(id) {
+async function deleteEvent() {
   try {
-    await fetch(`${BASE_URL}/${id}`, {
+    await fetch(`${BASE_URL + COHORT + endpoint}/${state.selectedEvent.id}`, {
       method: "DELETE",
     });
     render();
@@ -163,11 +162,11 @@ function renderSelectedEvent() {
   const $event = document.querySelector("article.selected_event");
   if (state.events.length) {
     $event.innerHTML = `
-  <h2>${state.selectedEvent.name}</h2>
-  <p>${state.selectedEvent.description}</p>
-  <p>${state.selectedEvent.date}</p>
-  <p>${state.selectedEvent.location}</p>
-  <p>${state.selectedEvent.cohortId}</p>
+  <h2>Name: ${state.selectedEvent.name}</h2>
+  <p>Description: ${state.selectedEvent.description}</p>
+  <p>Date: ${state.selectedEvent.date}</p>
+  <p>Location: ${state.selectedEvent.location}</p>
+  <p>Cohort: ${state.selectedEvent.cohortId}</p>
   `;
   } else {
     $event.innerHTML = `<p>No Event Selected!!!</p>`;
@@ -176,8 +175,8 @@ function renderSelectedEvent() {
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", async () => {
-    await deleteEvent(state.events);
-    getEvents();
+    await deleteEvent();
+    // getEvents();
   });
   $event.append(deleteButton);
 }
@@ -187,7 +186,7 @@ async function init() {
   await getEvents();
   renderEvents();
   loadEventHash();
-  selectedEvent();
+  renderSelectedEvent();
 }
 
 window.addEventListener("load", init);
