@@ -18,7 +18,7 @@ main {
 }
 
 section {
-  border: solid 1px pink;
+  /* border: solid 1px pink; */
   padding: 2rem;
   flex-direction: row;
   flex: 1;
