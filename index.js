@@ -1,6 +1,6 @@
 const BASE_URL = "https://fsa-crud-2aa9294fe819.herokuapp.com/api";
-const COHORT = "2401-FSA-ET-WEB-FT";
-const endpoint = "events";
+const COHORT = "/2401-FSA-ET-WEB-FT";
+const endpoint = "/events";
 
 /**
  *
@@ -28,11 +28,6 @@ const state = {
   selectedEvent: null,
 };
 
-const eventsList = document.querySelector("#events");
-
-const addEventForm = document.querySelector("#addEvent");
-addEventForm.addEventListener("submit", addEvent);
-
 /* 
 - User will find an event with names, dates, times, locations and descriptions
 
@@ -52,24 +47,30 @@ addEventForm.addEventListener("submit", addEvent);
 9. Is there an event listener attached to each delete button? Does it correctly remove a party from the list of parties?
 */
 
-async function render() {
-  await getEvents();
-  renderEvents();
-}
+// const eventsList = document.querySelector("#events");
 
-render();
+const $addEventForm = document.querySelector("#addEventButton");
 
-// Create function for selected Event
+$addEventForm.addEventListener("click", addEventButton);
+
+// async function render() {
+//   await getEvents();
+//   renderEvents();
+// }
+
+// render();
+
+// // Create function for selected Event
 function selectedEvent(event) {
   state.selectedEvent = event;
   location.hash = event.id;
 }
 
-// Create function to load the hash tags for the selected events
-function loadEventHash() {
-  const id = +location.hash.slice(1);
-  state.selectedEvent = state.events.find((event) => event.id === id);
-}
+// // Create function to load the hash tags for the selected events
+// function loadEventHash() {
+//   const id = +location.hash.slice(1);
+//   state.selectedEvent = state.events.find((event) => event.id === id);
+// }
 
 // Update state with an array of events objects from the API via the internet
 async function getEvents() {
@@ -81,10 +82,30 @@ async function getEvents() {
     console.error(error);
   }
 }
+function addEventButton(_event) {
+  const inputEvent = document.querySelector("#name");
+  const inputEvent2 = document.querySelector("#description");
+  const inputEvent3 = document.querySelector("#date");
+  const inputEvent4 = document.querySelector("#location");
+  const inputEvent5 = document.querySelector("#cohortID");
+
+  const eventsInput = document.querySelector("#events");
+  state.events.push(inputEvent.value);
+  state.events.push(inputEvent2.value);
+  state.events.push(inputEvent3.value);
+  state.events.push(inputEvent4.value);
+  state.events.push(inputEvent5.value);
+
+  let inputEventList = [];
+  state.events.map((e) => {
+    inputEventList.push(e);
+  });
+  eventsInput.innerHTML = inputEventList;
+}
 
 ////////////// RENDER /////////////////////
 function renderEvents() {
-  const $ul = document.querySelector("ul");
+  const $ul = document.querySelector("#cohortUl");
   const $events = state.events.map((event) => {
     const $li = document.createElement("li");
     $li.innerHTML = `
@@ -102,19 +123,23 @@ function renderEvents() {
 
 function renderSelectedEvent() {
   const $event = document.querySelector("article.selected_event");
-  $event.innerHTML = `
+  if (state.events) {
+    $event.innerHTML = `
   <h2>${state.selectedEvent.name}</h2>
   <p>${state.selectedRecipe.description}</p>
   <p>${state.selectedRecipe.date}</p>
   <p>${state.selectedRecipe.location}</p>
   <p>${state.selectedRecipe.cohortId}</p>
   `;
+  } else {
+    $event.innerHTML = `<p>No Event Selected!!!</p>`;
+  }
 }
 /////////////// SCRIPT /////////////////////
 async function init() {
   await getEvents();
   renderEvents();
-  loadEventHash();
+  // loadEventHash();
   renderSelectedEvent();
 }
 

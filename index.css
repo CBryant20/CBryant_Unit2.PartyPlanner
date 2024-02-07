@@ -17,11 +17,9 @@ main {
   display: 8;
 }
 
-#events {
-  /* border: solid rgb(212, 0, 255); */
-  /* color: #fff; */
-  /* padding: 2rem; */
-  display: flex;
+section {
+  border: solid 1px pink;
+  padding: 2rem;
   flex-direction: row;
   flex: 1;
   align-items: center;
@@ -32,7 +30,6 @@ main {
 }
 
 #select-event {
-  /* border: solid rgb(212, 0, 255); */
   flex: 1;
   font-size: 2rem;
   align-items: center;
