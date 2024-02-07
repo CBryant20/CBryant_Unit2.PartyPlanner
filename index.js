@@ -72,7 +72,7 @@ function loadEventHash() {
   state.selectedEvent = state.events.find((event) => event.id === id);
 }
 
-// Update state with an array of events objects from the API via the internet
+// Update state from the API and create a new array of the objects
 async function getEvents() {
   try {
     const response = await fetch(BASE_URL + COHORT + endpoint);
